@@ -1,5 +1,8 @@
 {
    "autoload": {
    	"psr-4": { "": [ "src/" ] }
+   },
+   "require": {
+      "willdurand/negotiation": "^2.0"
    }
 }
