@@ -9,23 +9,19 @@ class JsonFinder implements FinderInterface{
     
     public function findAll() {
         $data = file_get_contents($this->path);
-        return json_decode($data,true);
-        
+        $tab = json_decode($data,true);
+        return array_filter($tab); 
     }
     
     public function findOneById($id) {
-        $data = file_get_contents($this->path);
-        $tab = json_decode($data,true);
-        foreach($tab as $statut) {
-            if($statut['id']=$id) {
-                return $statut;
-            }
-        }
+        $tab = $this->findAll();
+        return $tab[$id];
+
     }
     
     public function writeStatus($user,$message) {
         $data = $this->findAll();
-        $id = count($data)+2;
+        $id = count($data)+1;
         $arrayStatus = array('id'=>$id,'user'=>$user,'message'=>$message);
         $data[] = $arrayStatus;
         file_put_contents($this->path, json_encode($data));
@@ -33,12 +29,12 @@ class JsonFinder implements FinderInterface{
     }
     
     public function deleteStatus($id) {
-        $data = file_get_contents($this->path);
-        $tab = json_decode($data,true);
-        if(count($tab)<$id) {
+        $tab = $this->findAll();
+        if(!isset($tab[$id-1])) {
             return -1;
         }
-        $tab[$id-1] = null;
+      
+        $tab[$id-1]="";
         file_put_contents($this->path, json_encode($tab));
         
     }

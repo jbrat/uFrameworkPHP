@@ -54,7 +54,7 @@ $app->post('/statuses', function (Request $request) use ($app) {
     $memory = new JsonFinder();
     $memory->writeStatus($user, $message);
     
-    $app->redirect('/statuses');  
+    $app->redirect('/statuses',201);  
     
 });
 
@@ -63,7 +63,7 @@ $app->delete('/statuses/(\d+)', function (Request $request, $id) use ($app) {
    if($memory->deleteStatus($id)==-1) {
        throw new HttpException(404, "Object doesn't exist");
    }
-   $app->redirect('/statuses');
+   $app->redirect('/status');
 });
 
 
