@@ -56,18 +56,23 @@ class Request {
     }
     
     static function guessBestFormat() {
+       
         $negotiator = new Negotiator();     
         $acceptHeader = $_SERVER['HTTP_ACCEPT'];    
         $priorities = array('text/html; charset=UTF-8', 'application/json');          
-        $value = $negotiator->getBest($acceptHeader, $priorities)->getValue();          
+        $value = $negotiator->getBest($acceptHeader, $priorities)->getValue();
+        
         switch ($value) {    
             case 'application/json':     
                 return 'json';      
             break;     
             case 'text/html':     
                 return 'html';      
-            break;             
+            break;   
+            default:
+                $response = new Response("Erreur de format",404);
+                $response->send();
+            break;
         }
-    }
-    
+    }    
 }
