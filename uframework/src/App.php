@@ -10,7 +10,6 @@ use View\TemplateEngineInterface;
 class App
 {
 
-
     /**
      * @var array
      */

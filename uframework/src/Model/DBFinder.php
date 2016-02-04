@@ -1,24 +1,15 @@
 <?php
 
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 namespace Model;
 
+use DataBase\DataBase;
 
-use Model\FinderInterface;
-/**
- * Description of DBFinder
- *
- * @author julien
- */
 class DBFinder implements FinderInterface {
     
     public function findAll() {
-  
+       $database = new DataBase();
+       $database->prepareAndExecuterQuery("SHOW TABLES", null);
+       var_dump($database->getResult());
     }
 
     public function findOneById($id) {

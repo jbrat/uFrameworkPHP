@@ -5,6 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use \Model\JsonFinder;
 use Http\Request;
 use Http\Response;
+use \Model\DBFinder;
 
 // Config
 $debug = true;
@@ -84,6 +85,11 @@ $app->delete('/statuses/(\d+)', function (Request $request, $id) use ($app) {
        return;
     }
    $app->redirect('/status');
+});
+
+$app->get('/database', function (Request $request) use ($app) {
+    $memory = new DBFinder();
+    $memory->findAll();
 });
 
 
