@@ -1,18 +1,43 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 namespace Model;
 
-/**
- * Description of Status
- *
- * @author julien
- */
 class Status {
-    //put your code here
+ 
+    private $id,
+            $user,
+            $message;
+    
+    function __construct($id, $user, $message) {
+        $this->id = $id;
+        $this->user = $user;
+        $this->message = $message;
+    }
+    
+    function getId() {
+        return $this->id;
+    }
+
+    function getUser() {
+        return $this->user;
+    }
+
+    function getMessage() {
+        return $this->message;
+    }
+
+    function setId($id) {
+        $this->id = $id;
+    }
+
+    function setUser($user) {
+        $this->user = $user;
+    }
+
+    function setMessage($message) {
+        $this->message = $message;
+    }
+
+
 }
