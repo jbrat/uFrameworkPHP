@@ -1,7 +1,7 @@
 <html>
     <body>
 <?php
-    echo $status['user']." ".$status['message'];   
+    echo $status->getUser()." --> ".$status->getMessage()." -- ".$status->getDate();   
 ?>
     </body>
 </html>

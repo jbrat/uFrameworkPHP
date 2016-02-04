@@ -6,6 +6,7 @@ use \Model\JsonFinder;
 use Http\Request;
 use Http\Response;
 use \Model\DBFinder;
+use Tools\Verification;
 
 // Config
 $debug = true;
@@ -22,29 +23,37 @@ $app->get('/', function () use ($app) {
 });
 
 $app->get('/statuses', function (Request $request) use ($app) {
-    $memory = new JsonFinder();
-    $data = $memory->findAll();
+    $limit = $request->getParameter('limit');
+    $orderby = $request->getParameter('orderby');
+ 
+    $memory = new DBFinder();
+    $statuses = $memory->findAll($limit,$orderby);
 
-    if(count($data)==0) {
+    if(count($statuses)==0) {
         $response = new Response("",204);
-        $response->send();
-    }
-    if(Request::guessBestFormat()=="json") {
-        $response = new Response(json_encode($data),200);
         $response->send();
         return;
     }
-    
-    return $app->render("status.php",array('data'=>$data));
+    if(Request::guessBestFormat()=="json") {
+        $response = new Response(json_encode($statuses),200);
+        $response->send();
+        return;
+    }
+    return $app->render("status.php",array('statuses'=>$statuses));
 });
 
 $app->get('/statuses/(\d+)', function (Request $request, $id) use ($app) {
-
-    $memory = new JsonFinder();
+    
+    if(!Verification::checkInteger($id)) {
+        $response = new Response("Error with the object ID",400);
+        $response->send();
+        return;    
+    }
+    $memory = new DBFinder();
     $status = $memory->findOneById($id);
     
     if(!isset($status)) { 
-        $response = new Response("Object doesn't exist",404);
+        $response = new Response("Object doesn't exist",416);
         $response->send();
         return;    
     }
@@ -66,10 +75,12 @@ $app->post('/statuses', function (Request $request) use ($app) {
     $message = $request->getParameter('message');
     $user = $request->getParameter('username');
     
-    $memory = new JsonFinder();
-    $memory->writeStatus($user, $message);
-    
-    $response = new Response("",201);
+    $memory = new DBFinder();
+    if(!isset($user) || !isset($message)) {
+        $response = new Response("Error parameters",400);
+    }
+    $memory->addStatus($user,$message);
+    $response = new Response("Status add correctly",201);
     $response->send();
     
     $app->redirect('/statuses',201);  
@@ -78,13 +89,19 @@ $app->post('/statuses', function (Request $request) use ($app) {
 
 $app->delete('/statuses/(\d+)', function (Request $request, $id) use ($app) {
 
-    $memory = new JsonFinder();
+    if(!Verification::checkInteger($id)) {
+        $response = new Response("Error with the object ID",400);
+        $response->send();
+        return;    
+    }
+    
+    $memory = new DBFinder();
     if ($memory->deleteStatus($id)==-1) {
-       $response = new Response("Object doesn't exist",404);
+       $response = new Response("Object doesn't exist",416);
        $response->send();
        return;
     }
-   $app->redirect('/status');
+   $app->redirect('/statuses');
 });
 
 $app->get('/database', function (Request $request) use ($app) {

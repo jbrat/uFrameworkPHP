@@ -19,23 +19,24 @@ class DataBase {
     }
     
     public function prepareAndExecuterQuery($requete, $param){
-
+var_dump($param[0]);
         $this->statement = $this->dbh->prepare($requete);
 
         if (isset($param) && $param!=null) {
             for ($i = 1; $i <= count($param); $i++) {
                 $this->statement->bindParam($i, $param[$i][0], $param[$i][1]);
+                return;
             }
         }
         $this->statement->execute();
     }
 
     public function getResult(){
-          return $this->statement->fetchAll();   
+        return $this->statement->fetchAll();   
     }     
 
     public function destroyQueryResults(){
-        $this->$statement->closeCursor();
-        $this->$statement=NULL;
+        $this->statement->closeCursor();
+        $this->statement=NULL;
     }   
 }

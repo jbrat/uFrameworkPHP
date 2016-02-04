@@ -7,12 +7,14 @@ class Status {
  
     private $id,
             $user,
-            $message;
+            $message,
+            $date;
     
-    function __construct($id, $user, $message) {
+    function __construct($id, $user, $message, $date) {
         $this->id = $id;
         $this->user = $user;
         $this->message = $message;
+        $this->date = new \DateTime($date);
     }
     
     function getId() {
@@ -27,17 +29,7 @@ class Status {
         return $this->message;
     }
 
-    function setId($id) {
-        $this->id = $id;
+    function getDate() {
+        return $this->date->format('Y-m-d');
     }
-
-    function setUser($user) {
-        $this->user = $user;
-    }
-
-    function setMessage($message) {
-        $this->message = $message;
-    }
-
-
 }

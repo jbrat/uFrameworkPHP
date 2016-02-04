@@ -3,8 +3,9 @@
         <?php
             echo "Liste des status";
             echo "<ul>";
-            foreach($data as $statut) {
-                echo "<li>".$statut['user']." ".$statut['message']."</li><form action='/statuses/".$statut['id']."' method='POST'>
+      
+            foreach($statuses as $statut) {
+                echo "<li>".$statut->getUser()."--> ".$statut->getMessage()." -- Le : ".$statut->getDate()."</li><form action='/statuses/".$statut->getId()."' method='POST'>
                       <input type='hidden' name='_method' value='DELETE'>
                       <input type='submit' value='Delete'>
                       </form>";

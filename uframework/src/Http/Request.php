@@ -68,11 +68,7 @@ class Request {
             break;     
             case 'text/html':     
                 return 'html';      
-            break;   
-            default:
-                $response = new Response("Erreur de format",404);
-                $response->send();
-            break;
+            break; 
         }
     }    
 }
