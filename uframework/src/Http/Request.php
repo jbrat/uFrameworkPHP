@@ -2,6 +2,8 @@
 
 namespace Http;
 
+use \Negotiation\Negotiator;
+
 class Request {
 
     const GET    = 'GET';
@@ -53,7 +55,7 @@ class Request {
         return $uri;
     }
     
-    function guessBestFormat() {
+    static function guessBestFormat() {
         $negotiator = new Negotiator();     
         $acceptHeader = $_SERVER['HTTP_ACCEPT'];    
         $priorities = array('text/html; charset=UTF-8', 'application/json');          
