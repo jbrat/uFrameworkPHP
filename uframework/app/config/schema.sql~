@@ -1,6 +1,8 @@
+drop table if exists statuses;
+
 CREATE TABLE statuses
 (
     id INT PRIMARY KEY NOT NULL,
-    user VARCHAR(100),
-    message VARCHAR(400),
+    user VARCHAR2(100),
+    message VARCHAR2(400)
 );

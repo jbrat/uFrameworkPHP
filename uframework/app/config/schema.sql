@@ -1,3 +1,5 @@
+drop table if exists statuses;
+
 CREATE TABLE statuses
 (
     id INT PRIMARY KEY NOT NULL,
