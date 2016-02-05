@@ -2,7 +2,6 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Model\JsonFinder;
 use Http\Request;
 use Http\Response;
 use \Model\DBFinder;
@@ -23,11 +22,10 @@ $app->get('/', function () use ($app) {
 });
 
 $app->get('/statuses', function (Request $request) use ($app) {
-    $limit = $request->getParameter('limit');
-    $orderby = $request->getParameter('orderby');
+   
  
     $memory = new DBFinder();
-    $statuses = $memory->findAll($limit,$orderby);
+    $statuses = $memory->findAll();
 
     if(count($statuses)==0) {
         $response = new Response("",204);
@@ -104,10 +102,62 @@ $app->delete('/statuses/(\d+)', function (Request $request, $id) use ($app) {
    $app->redirect('/statuses');
 });
 
-$app->get('/database', function (Request $request) use ($app) {
-    $memory = new DBFinder();
-    $memory->findAll();
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//                          AUTHENTIFICATION                                                   //
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$app->get('/login', function (Request $request) use ($app) {
+    return $app->render('login.php');
 });
 
+$app->get('/register', function (Request $request) use ($app) {
+    return $app->render('register.php');
+});
+
+$app->post('/login', function (Request $request) use ($app) {
+    
+});
+
+$app->post('/register', function (Request $request) use ($app) {
+    
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//                          FIREWALL                                                           //
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$app->addListener('process.before', function(Request $req) use ($app) {
+    session_start();
+
+    $allowed = [
+        '/login' => [ Request::GET, Request::POST ],
+        '/statuses/(\d+)' => [ Request::GET ],
+        '/statuses' => [ Request::GET, Request::POST ],
+        '/register' => [ Request::GET, Request::POST ],
+        '/' => [ Request::GET ],
+    ];
+
+    if (isset($_SESSION['is_authenticated'])
+        && true === $_SESSION['is_authenticated']) {
+        return;
+    }
+
+    foreach ($allowed as $pattern => $methods) {
+        if (preg_match(sprintf('#^%s$#', $pattern), $req->getUri())
+            && in_array($req->getMethod(), $methods)) {
+            return;
+        }
+    }
+    
+    switch ($req->guessBestFormat()) {
+        case 'json':
+            throw new HttpException(401);
+    }
+    
+    return $app->redirect('/login');
+});
 
 return $app;

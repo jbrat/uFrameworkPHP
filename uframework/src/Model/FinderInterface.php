@@ -9,7 +9,7 @@ interface FinderInterface
      *
      * @return array
      */
-    public function findAll($limit,$orderby);
+    public function findAll();
 
     /**
      * Retrieve an element by its id.

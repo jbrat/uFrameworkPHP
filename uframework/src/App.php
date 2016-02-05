@@ -10,6 +10,8 @@ use View\TemplateEngineInterface;
 class App
 {
 
+    use EventDispatcherTrait;
+    
     /**
      * @var array
      */
@@ -148,5 +150,17 @@ class App
         http_response_code($statusCode);
         header(sprintf('Location: %s', $to));
         die;
+    }
+    
+    /**
+     * Method to return the database information
+     */
+    static function getDataBaseInformation() {
+        $paramInformation = array(
+            'dsn'       => 'mysql:host=localhost;dbname=uframework',
+            'user'     => 'uframework',
+            'password'  => 'p4ssw0rd'
+        );
+        return $paramInformation;
     }
 }

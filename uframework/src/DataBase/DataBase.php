@@ -3,29 +3,25 @@
 namespace DataBase;
 
 use PDO;
+use App;
 
-class DataBase {
+class DataBase extends PDO {
     
-    private $dbh = null,
-    $statement;
+    private $statement;
     
-    private $login = "uframework",
-    $mdp = "p4ssw0rd",
-    $DataBase = "uframework",
-    $host = "localhost";
-
-    public function __construct() {   
-        $this->dbh = new PDO('mysql:host='.$this->host.';dbname='.$this->DataBase.'',$this->login,$this->mdp); 
+    public function __construct() { 
+       
+       $paramDataBase = App::getDataBaseInformation();
+       parent::__construct($paramDataBase['dsn'], $paramDataBase['user'], $paramDataBase['password']);
     }
     
     public function prepareAndExecuterQuery($requete, $param){
-var_dump($param[0]);
-        $this->statement = $this->dbh->prepare($requete);
 
+        $this->statement = $this->prepare($requete);
+        
         if (isset($param) && $param!=null) {
             for ($i = 1; $i <= count($param); $i++) {
                 $this->statement->bindParam($i, $param[$i][0], $param[$i][1]);
-                return;
             }
         }
         $this->statement->execute();
