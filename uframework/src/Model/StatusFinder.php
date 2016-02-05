@@ -7,13 +7,11 @@ use DataBase\DataBase;
 use Model\Status;
 
 
-class DBFinder implements FinderInterface {
+class StatusFinder implements FinderInterface {
     
-    private $statusMapper;
     private $conn;
-    function __construct() {
-        $this->conn = new DataBase();
-        $this->statusMapper = new StatusMapper($this->conn);
+    function __construct(DataBase $conn) {
+        $this->conn = $conn;
     }
     
     public function findAll() {

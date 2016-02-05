@@ -1,5 +1,7 @@
 <?php
 
+namespace Dispatcher;
+
 trait EventDispatcherTrait
 {
     private $events = [];

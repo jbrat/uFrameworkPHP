@@ -4,8 +4,14 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Http\Request;
 use Http\Response;
-use \Model\DBFinder;
+use Model\StatusFinder;
+use \Model\UserFinder;
 use Tools\Verification;
+use \Persistance\UserMapper;
+use Persistance\StatusMapper;
+use DataBase\DataBase;
+use Model\Status;
+use Model\User;
 
 // Config
 $debug = true;
@@ -15,17 +21,27 @@ $app = new \App(new View\TemplateEngine(
 ), $debug);
 
 /**
+ * Mapper et Finder
+ */
+$conn = new DataBase();
+$userMapper = new UserMapper($conn);
+$statusMapper = new StatusMapper($conn);
+
+$statusFinder = new StatusFinder($conn);
+$userFinder = new UserFinder($conn);
+
+
+/**
  * Index
  */
 $app->get('/', function () use ($app) {
-    return $app->render('index.php');
+    //return $app->render('index.php');
+    $app->redirect('/statuses');
 });
 
-$app->get('/statuses', function (Request $request) use ($app) {
-   
- 
-    $memory = new DBFinder();
-    $statuses = $memory->findAll();
+$app->get('/statuses', function (Request $request) use ($app,$statusFinder) {
+  
+    $statuses = $statusFinder->findAll();
 
     if(count($statuses)==0) {
         $response = new Response("",204);
@@ -40,15 +56,14 @@ $app->get('/statuses', function (Request $request) use ($app) {
     return $app->render("status.php",array('statuses'=>$statuses));
 });
 
-$app->get('/statuses/(\d+)', function (Request $request, $id) use ($app) {
+$app->get('/statuses/(\d+)', function (Request $request, $id) use ($app,$statusFinder) {
     
     if(!Verification::checkInteger($id)) {
         $response = new Response("Error with the object ID",400);
         $response->send();
         return;    
     }
-    $memory = new DBFinder();
-    $status = $memory->findOneById($id);
+    $status = $statusFinder->findOneById($id);
     
     if(!isset($status)) { 
         $response = new Response("Object doesn't exist",416);
@@ -65,19 +80,25 @@ $app->get('/statuses/(\d+)', function (Request $request, $id) use ($app) {
 });
 
 $app->get('/statusesForm', function (Request $request) use ($app) {
-    return $app->render("statuses.php");
+    return $app->render("statusesForm.php");
 });
 
-$app->post('/statuses', function (Request $request) use ($app) {
+$app->post('/statuses', function (Request $request) use ($app,$statusMapper) {
 
     $message = $request->getParameter('message');
     $user = $request->getParameter('username');
     
-    $memory = new DBFinder();
+    
     if(!isset($user) || !isset($message)) {
-        $response = new Response("Error parameters",400);
+        $erreur = "Empty parameters";
+        $response = new Response($erreur,400);
+        $response->send();
+        return $app->render('statusesForm.php',array('user'     => $user,
+                                                     'message'  => $message,
+                                                     'error'    => $erreur));
     }
-    $memory->addStatus($user,$message);
+    
+    $statusMapper->persist(new Status(null,$user,$message,date("Y-m-d H:i:s")));
     $response = new Response("Status add correctly",201);
     $response->send();
     
@@ -85,21 +106,20 @@ $app->post('/statuses', function (Request $request) use ($app) {
     
 });
 
-$app->delete('/statuses/(\d+)', function (Request $request, $id) use ($app) {
+$app->delete('/statuses/(\d+)', function (Request $request, $id) use ($app,$statusMapper,$statusFinder) {
 
     if(!Verification::checkInteger($id)) {
         $response = new Response("Error with the object ID",400);
         $response->send();
         return;    
     }
-    
-    $memory = new DBFinder();
-    if ($memory->deleteStatus($id)==-1) {
-       $response = new Response("Object doesn't exist",416);
-       $response->send();
-       return;
+    if(!$statusFinder->findOneById($id)) {
+        $response = new Response("Object doesn't exist",416);
+        $response->send();
+        return; 
     }
-   $app->redirect('/statuses');
+    $statusMapper->remove($id);
+    $app->redirect('/statuses');
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,11 +135,60 @@ $app->get('/register', function (Request $request) use ($app) {
     return $app->render('register.php');
 });
 
-$app->post('/login', function (Request $request) use ($app) {
+$app->post('/login', function (Request $request) use ($app,$userMapper,$userFinder) {
+    $login = $request->getParameter('user');
+    $password = $request->getParameter('password');
+    
+    if(!isset($login) || !isset($password)) {
+        $erreur = "Empty parameters";
+        $response = new Response($erreur,400);
+        $response->send();
+        return $app->render('register.php',array('erreur'   => $erreur,
+                                                 'login'    => $login));
+    }
+    
+    $user = $userFinder->findOneByLogin($login);
+    if(!password_verify($password, $user->getPassword())) {
+        $erreur = "Password incorrect";
+        $response = new Response($erreur,400);
+        $response->send();
+        return $app->render('register.php',array('erreur'   => $erreur,
+                                                 'login'    => $login));
+    }
+    
+    $_SESSION['is_authenticated'] = true;
+    $_SESSION['id'] = $user->getId();
+    $_SESSION['login'] = $user->getLogin();
+    
     
 });
 
-$app->post('/register', function (Request $request) use ($app) {
+$app->post('/register', function (Request $request) use ($app,$userMapper) {
+    
+    $login = $request->getParameter('user');
+    $password = $request->getParameter('password');
+    $password_verif = $request->getParameter('password2');
+    
+    if(!isset($login) || !isset($password)) {
+        $erreur = "Empty parameters";
+        $response = new Response($erreur,400);
+        $response->send();
+        return $app->render('register.php',array('erreur'   => $erreur,
+                                                 'login'    => $login));
+    }
+    
+    if(!($password == $password_verif)) {
+        $erreur = "The two password aren't similars";
+        return $app->render('register.php',array('erreur'   => $erreur,
+                                                 'login'    => $login));
+    }
+    
+    $userMapper->persist(new User(null,$login, password_hash($password,PASSWORD_DEFAULT)));
+    
+    $response = new Response("User add correctly",201);
+    $response->send();
+    
+    $app->redirect('/statuses',201);  
     
 });
 

@@ -8,6 +8,15 @@ CREATE TABLE statuses
     date DATE
 );
 
+CREATE TABLE user
+(
+	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	login VARCHAR(100),
+	password VARCHAR(100)
+);
+
 INSERT INTO statuses(user,message,date) VALUES("jubrat","Sortie de php7 aleluja !",SYSDATE());
 INSERT INTO statuses(user,message,date) VALUES("jubrat","PHP est le meilleur langage",SYSDATE());
 INSERT INTO statuses(user,message,date) VALUES("panegroni","Le php c'est la vie !",SYSDATE());
+
+INSERT INTO user(login,password) VALUES("admin","admin");

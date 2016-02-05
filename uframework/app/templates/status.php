@@ -12,6 +12,7 @@
             }
             echo "</ul>";
         ?>
+        <p>Ajouter un status en cliquant <a href="/statusesForm">ici</a></p>
     </body> 
 </html>
 

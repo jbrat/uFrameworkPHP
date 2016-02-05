@@ -10,7 +10,7 @@ use View\TemplateEngineInterface;
 class App
 {
 
-    use EventDispatcherTrait;
+    use \Dispatcher\EventDispatcherTrait;
     
     /**
      * @var array
@@ -112,6 +112,8 @@ class App
      */
     private function process(Route $route,Request $request)
     {
+        $this->dispatch('process.before',[$request]);
+        
         $arguments = $route->getArguments();
         array_unshift($arguments, $request);
 
