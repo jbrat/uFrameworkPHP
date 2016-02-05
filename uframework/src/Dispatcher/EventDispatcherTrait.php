@@ -10,9 +10,9 @@ trait EventDispatcherTrait
         $this->events[$name][] = $callable;
     }
     
-    public function dispatch($name, array $argument = []) {
+    public function dispatch($name, array $arguments = []) {
         foreach($this->events[$name] as $callable) {
-            call_user_func_array($callback, $arguments);
+            call_user_func_array($callable, $arguments);
         }
     }
 }

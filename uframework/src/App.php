@@ -6,11 +6,12 @@ use Routing\Route;
 use Http\Request;
 use Http\Response;
 use View\TemplateEngineInterface;
+use \Dispatcher\EventDispatcherTrait;
 
 class App
 {
 
-    use \Dispatcher\EventDispatcherTrait;
+    use EventDispatcherTrait;
     
     /**
      * @var array

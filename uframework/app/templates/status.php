@@ -1,6 +1,11 @@
 <html>
     <body>
         <?php
+        
+            echo "Bienvenue : ".$login."<br />";
+                if($login!= "Anonymous") {
+                   echo "<a href='/logout'>Se deconnecter</a><br /><br />";
+                }
             echo "Liste des status";
             echo "<ul>";
       

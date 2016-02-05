@@ -42,7 +42,7 @@ $app->get('/', function () use ($app) {
 $app->get('/statuses', function (Request $request) use ($app,$statusFinder) {
   
     $statuses = $statusFinder->findAll();
-
+    
     if(count($statuses)==0) {
         $response = new Response("",204);
         $response->send();
@@ -53,7 +53,14 @@ $app->get('/statuses', function (Request $request) use ($app,$statusFinder) {
         $response->send();
         return;
     }
-    return $app->render("status.php",array('statuses'=>$statuses));
+    if($_SESSION['login']) {
+        $login = $_SESSION['login'];
+    } else {
+        $login = "Anonymous";
+    }
+    
+    return $app->render("status.php",array('statuses'   => $statuses,
+                                           'login'      => $login ));
 });
 
 $app->get('/statuses/(\d+)', function (Request $request, $id) use ($app,$statusFinder) {
@@ -87,7 +94,7 @@ $app->post('/statuses', function (Request $request) use ($app,$statusMapper) {
 
     $message = $request->getParameter('message');
     $user = $request->getParameter('username');
-    
+   
     
     if(!isset($user) || !isset($message)) {
         $erreur = "Empty parameters";
@@ -135,25 +142,26 @@ $app->get('/register', function (Request $request) use ($app) {
     return $app->render('register.php');
 });
 
-$app->post('/login', function (Request $request) use ($app,$userMapper,$userFinder) {
-    $login = $request->getParameter('user');
+$app->post('/login', function (Request $request) use ($app,$userFinder) {
+    $login = $request->getParameter('login');
     $password = $request->getParameter('password');
     
     if(!isset($login) || !isset($password)) {
         $erreur = "Empty parameters";
         $response = new Response($erreur,400);
         $response->send();
-        return $app->render('register.php',array('erreur'   => $erreur,
-                                                 'login'    => $login));
+        return $app->render('login.php',array('erreur'   => $erreur,
+                                              'login'    => $login));
     }
     
     $user = $userFinder->findOneByLogin($login);
+    
     if(!password_verify($password, $user->getPassword())) {
         $erreur = "Password incorrect";
         $response = new Response($erreur,400);
         $response->send();
-        return $app->render('register.php',array('erreur'   => $erreur,
-                                                 'login'    => $login));
+        return $app->render('login.php',array('erreur'   => $erreur,
+                                              'login'    => $login));
     }
     
     $_SESSION['is_authenticated'] = true;
@@ -185,11 +193,14 @@ $app->post('/register', function (Request $request) use ($app,$userMapper) {
     
     $userMapper->persist(new User(null,$login, password_hash($password,PASSWORD_DEFAULT)));
     
-    $response = new Response("User add correctly",201);
-    $response->send();
-    
     $app->redirect('/statuses',201);  
     
+});
+
+$app->get('/logout', function(Request $request) use ($app) {
+    session_destroy();
+    
+    $app->redirect('/login');
 });
 
 
@@ -199,6 +210,7 @@ $app->post('/register', function (Request $request) use ($app,$userMapper) {
 
 
 $app->addListener('process.before', function(Request $req) use ($app) {
+    
     session_start();
 
     $allowed = [

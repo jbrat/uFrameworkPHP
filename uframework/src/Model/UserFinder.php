@@ -4,6 +4,7 @@ namespace Model;
 
 use DataBase\DataBase;
 use Model\User;
+use \PDO;
 
 class UserFinder {
     
