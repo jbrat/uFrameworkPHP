@@ -20,14 +20,15 @@ class TemplateEngine implements TemplateEngineInterface
     public function render($template, array $parameters = array())
     {
         extract($parameters);
-
+        
         if (false === $this->isAbsolutePath($template)) {
             $template = $this->templateDir . DIRECTORY_SEPARATOR . $template;
         }
 
+        include $this->templateDir.DIRECTORY_SEPARATOR.'header_html.php';
         ob_start();
         include $template;
-
+        include $this->templateDir.DIRECTORY_SEPARATOR.'footer_html.php';
         return ob_get_clean();
     }
 

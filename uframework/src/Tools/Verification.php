@@ -14,4 +14,14 @@ class Verification {
             return false;
         }
     }
+    
+    /**
+     * Method to check if it's a correct length for a tweet
+     */
+    static function checkTweetMessage($message) {
+        if(strlen($message) <= 140) {
+            return true;
+        }
+        return false;
+    }
 }

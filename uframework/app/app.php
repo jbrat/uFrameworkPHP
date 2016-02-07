@@ -87,17 +87,28 @@ $app->get('/statuses/(\d+)', function (Request $request, $id) use ($app,$statusF
 });
 
 $app->get('/statusesForm', function (Request $request) use ($app) {
-    return $app->render("statusesForm.php");
+    
+    return $app->render("statusesForm.php",array('user'     => $_SESSION['login'],
+                                                 'erreur'   => '',
+                                                 'message'  => ''));
 });
 
 $app->post('/statuses', function (Request $request) use ($app,$statusMapper) {
 
     $message = $request->getParameter('message');
-    $user = $request->getParameter('username');
-   
+    $user = $request->getParameter('username'); 
     
     if(!isset($user) || !isset($message)) {
         $erreur = "Empty parameters";
+        $response = new Response($erreur,400);
+        $response->send();
+        return  $app->render('statusesForm.php',array('user'     => $user,
+                                                     'message'  => $message,
+                                                     'error'    => $erreur));
+    }
+    
+    if(!Verification::checkTweetMessage($message)) {
+        $erreur = "The message size is larger than 140";
         $response = new Response($erreur,400);
         $response->send();
         return $app->render('statusesForm.php',array('user'     => $user,
@@ -135,7 +146,10 @@ $app->delete('/statuses/(\d+)', function (Request $request, $id) use ($app,$stat
 
 
 $app->get('/login', function (Request $request) use ($app) {
-    return $app->render('login.php');
+    $login = $request->getParameter('login');
+    
+    return $app->render('login.php',array('login'   => $login,
+                                          'erreur'  => ''));
 });
 
 $app->get('/register', function (Request $request) use ($app) {
@@ -148,8 +162,8 @@ $app->post('/login', function (Request $request) use ($app,$userFinder) {
     
     if(!isset($login) || !isset($password)) {
         $erreur = "Empty parameters";
-        $response = new Response($erreur,400);
-        $response->send();
+        /*$response = new Response($erreur,400);
+        $response->send();*/
         return $app->render('login.php',array('erreur'   => $erreur,
                                               'login'    => $login));
     }
@@ -158,8 +172,8 @@ $app->post('/login', function (Request $request) use ($app,$userFinder) {
     
     if(!password_verify($password, $user->getPassword())) {
         $erreur = "Password incorrect";
-        $response = new Response($erreur,400);
-        $response->send();
+        /*$response = new Response($erreur,400);
+        $response->send();*/
         return $app->render('login.php',array('erreur'   => $erreur,
                                               'login'    => $login));
     }
@@ -168,7 +182,7 @@ $app->post('/login', function (Request $request) use ($app,$userFinder) {
     $_SESSION['id'] = $user->getId();
     $_SESSION['login'] = $user->getLogin();
     
-    
+    $app->redirect('/statuses');
 });
 
 $app->post('/register', function (Request $request) use ($app,$userMapper) {
@@ -179,8 +193,8 @@ $app->post('/register', function (Request $request) use ($app,$userMapper) {
     
     if(!isset($login) || !isset($password)) {
         $erreur = "Empty parameters";
-        $response = new Response($erreur,400);
-        $response->send();
+        /*$response = new Response($erreur,400);
+        $response->send();*/
         return $app->render('register.php',array('erreur'   => $erreur,
                                                  'login'    => $login));
     }
@@ -193,14 +207,13 @@ $app->post('/register', function (Request $request) use ($app,$userMapper) {
     
     $userMapper->persist(new User(null,$login, password_hash($password,PASSWORD_DEFAULT)));
     
-    $app->redirect('/statuses',201);  
+    $app->redirect('/login?login='.$login);  
     
 });
 
 $app->get('/logout', function(Request $request) use ($app) {
     session_destroy();
-    
-    $app->redirect('/login');
+    $app->redirect('/statuses');
 });
 
 
