@@ -58,9 +58,11 @@ $app->get('/statuses', function (Request $request) use ($app,$statusFinder) {
     } else {
         $login = "Anonymous";
     }
-    
-    return $app->render("status.php",array('statuses'   => $statuses,
-                                           'login'      => $login ));
+    $content = $app->render("status.php",array('statuses'   => $statuses,
+                                               'login'      => $login ));
+    $response = new Response($content,200);
+    $response->send();
+   
 });
 
 $app->get('/statuses/(\d+)', function (Request $request, $id) use ($app,$statusFinder) {
@@ -82,8 +84,10 @@ $app->get('/statuses/(\d+)', function (Request $request, $id) use ($app,$statusF
         $response->send();
         return;
     }
-       
-    return $app->render("unStatus.php",array('status'=>$status));
+    
+    $content = $app->render("unStatus.php",array('status'=>$status));   
+    $response = new Response($content,200);
+    $response->send();
 });
 
 $app->get('/statusesForm', function (Request $request) use ($app) {
