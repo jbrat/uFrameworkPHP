@@ -4,7 +4,7 @@ namespace Model;
 
 use DataBase\DataBase;
 use Model\User;
-use \PDO;
+
 
 class UserFinder {
     
@@ -17,10 +17,10 @@ class UserFinder {
     
     function findOneById($id) {
         
-        $requete = "SELECT * FROM user WHERE id=?"; 
-        $param=array('1'=>array($id,\PDO::PARAM_INT));
+        $requete = "SELECT * FROM user WHERE id=:id"; 
+        $param=array('id' => $id);
 
-        $this->conn->prepareAndExecuterQuery($requete, $param);
+        $this->conn->prepareAndExecuteQuery($requete, $param);
         $result = $this->conn->getResult()[0];
         $this->conn->destroyQueryResults();
 
@@ -28,10 +28,10 @@ class UserFinder {
     }
     
     function findOneByLogin($login) {
-        $requete = "SELECT * FROM user WHERE login=?";
-        $param = array('1'=>array($login,PDO::PARAM_STR));
+        $requete = "SELECT * FROM user WHERE login=:login";
+        $param = array('login' => $login);
         
-        $this->conn->prepareAndExecuterQuery($requete, $param);
+        $this->conn->prepareAndExecuteQuery($requete, $param);
         $result = $this->conn->getResult()[0];
         $this->conn->destroyQueryResults();
         

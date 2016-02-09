@@ -15,18 +15,18 @@ class StatusMapper {
     }
 
     function persist(Status $status) {
-         $requete = "INSERT INTO statuses(user,message,date) value(?,?,?)";
+         $requete = "INSERT INTO statuses(user,message,date) value(:user, :message, :date)";
          $param = array(
-             '1' => array($status->getUser(), \PDO::PARAM_STR),
-             '2' => array($status->getMessage(), \PDO::PARAM_STR),
-             '3' => array($status->getDate(), \PDO::PARAM_STR)
+             'user'    => $status->getUser(),
+             'message' => $status->getMessage(),
+             'date'    => $status->getDate()
          );
-         $this->conn->prepareAndExecuterQuery($requete, $param);
+         $this->conn->prepareAndExecuteQuery($requete, $param);
     }
 
     function remove($id) {
-        $requete = "DELETE FROM statuses WHERE id=?";
-        $param = array('1'=>array($id, \PDO::PARAM_INT));
-        $this->conn->prepareAndExecuterQuery($requete, $param);
+        $requete = "DELETE FROM statuses WHERE id=:id";
+        $param = array('id'  => $id);
+        $this->conn->prepareAndExecuteQuery($requete, $param);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Model;
 
-use Persistance\StatusMapper;
 use DataBase\DataBase;
 use Model\Status;
 
@@ -18,7 +17,7 @@ class StatusFinder implements FinderInterface {
         
         $requete = "SELECT * FROM statuses";
         
-        $this->conn->prepareAndExecuterQuery($requete, null);
+        $this->conn->prepareAndExecuteQuery($requete, array());
         $resultat = $this->conn->getResult();
         $this->conn->destroyQueryResults();
         $statuses = array();
@@ -30,27 +29,13 @@ class StatusFinder implements FinderInterface {
 
     public function findOneById($id) {
         
-        $requete = "SELECT * FROM statuses WHERE id=?"; 
-        $param=array('1'=>array($id,\PDO::PARAM_INT));
+        $requete = "SELECT * FROM statuses WHERE id=:id"; 
+        $param=array('id' => $id);
 
-        $this->conn->prepareAndExecuterQuery($requete, $param);
+        $this->conn->prepareAndExecuteQuery($requete, $param);
         $result = $this->conn->getResult()[0];
         $this->conn->destroyQueryResults();
 
         return new Status($result['id'], $result['user'], $result['message'], $result['date']);
     }
-    
-    public function addStatus($user,$message) {
-        $status = new Status(null,$user,$message,date("Y-m-d H:i:s"));
-        $this->statusMapper->persist($status);
-        
-    }
-    
-    public function deleteStatus($id) {
-        if(!$this->findOneById($id)) {
-            return -1;
-        }
-        $this->statusMapper->remove($id);
-    }
-
 }

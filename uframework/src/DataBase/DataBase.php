@@ -14,17 +14,14 @@ class DataBase extends PDO {
        $paramDataBase = App::getDataBaseInformation();
        parent::__construct($paramDataBase['dsn'], $paramDataBase['user'], $paramDataBase['password']);
     }
-    
-    public function prepareAndExecuterQuery($requete, $param){
 
-        $this->statement = $this->prepare($requete);
-        
-        if (isset($param) && $param!=null) {
-            for ($i = 1; $i <= count($param); $i++) {
-                $this->statement->bindParam($i, $param[$i][0], $param[$i][1]);
-            }
+    public  function prepareAndExecuteQuery($query, array $parameters = []){
+        $this->statement = $this->prepare($query);
+        foreach($parameters as $name => $value){
+            $this->statement->bindValue(':'.$name,$value);
         }
         $this->statement->execute();
+        
     }
 
     public function getResult(){

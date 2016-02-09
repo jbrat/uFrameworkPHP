@@ -166,20 +166,20 @@ $app->post('/login', function (Request $request) use ($app,$userFinder) {
     
     if(!isset($login) || !isset($password)) {
         $erreur = "Empty parameters";
-        /*$response = new Response($erreur,400);
-        $response->send();*/
-        return $app->render('login.php',array('erreur'   => $erreur,
-                                              'login'    => $login));
+        $content = $app->render('login.php',array('erreur'   => $erreur,
+                                                  'login'    => $login));
+        $response = new Response($content,400);
+        $response->send();
     }
     
     $user = $userFinder->findOneByLogin($login);
     
     if(!password_verify($password, $user->getPassword())) {
         $erreur = "Password incorrect";
-        /*$response = new Response($erreur,400);
-        $response->send();*/
-        return $app->render('login.php',array('erreur'   => $erreur,
-                                              'login'    => $login));
+        $content = $app->render('login.php',array('erreur'   => $erreur,
+                                                  'login'    => $login));
+        $response = new Response($content,400);
+        $response->send();
     }
     
     $_SESSION['is_authenticated'] = true;
@@ -197,10 +197,10 @@ $app->post('/register', function (Request $request) use ($app,$userMapper) {
     
     if(!isset($login) || !isset($password)) {
         $erreur = "Empty parameters";
-        /*$response = new Response($erreur,400);
-        $response->send();*/
-        return $app->render('register.php',array('erreur'   => $erreur,
+        $content = $app->render('register.php',array('erreur'   => $erreur,
                                                  'login'    => $login));
+        $response = new Response($content,400);
+        $response->send();
     }
     
     if(!($password == $password_verif)) {

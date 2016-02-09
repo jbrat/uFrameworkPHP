@@ -14,17 +14,17 @@ class UserMapper {
     }
     
     function persist(User $user) {
-        $requete = "INSERT INTO user(login, password) value(?,?)";
+        $requete = "INSERT INTO user(login, password) value(:login,:password)";
         $param = array(
-            '1' => array($user->getLogin(), \PDO::PARAM_STR),
-            '2' => array($user->getPassword(), \PDO::PARAM_STR)
+            'login'     => $user->getLogin(),
+            'password'  => $user->getPassword()
         );
-        $this->conn->prepareAndExecuterQuery($requete, $param); 
+        $this->conn->prepareAndExecuteQuery($requete, $param); 
     }
     
     function remove($id) {
-        $requete = "DELETE FROM user WHERE id=?";
-        $param = array('1'=>array($id, \PDO::PARAM_INT));
-        $this->conn->prepareAndExecuterQuery($requete, $param);
+        $requete = "DELETE FROM user WHERE id= :id";
+        $param = array('id' =>  $id);
+        $this->conn->prepareAndExecuteQuery($requete, $param);
     }
 }
