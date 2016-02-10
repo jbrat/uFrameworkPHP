@@ -35,16 +35,42 @@ $userFinder = new UserFinder($conn);
  * Index
  */
 $app->get('/', function () use ($app) {
-    //return $app->render('index.php');
     $app->redirect('/statuses');
 });
 
 $app->get('/statuses', function (Request $request) use ($app,$statusFinder) {
+    if($_SESSION['login']) {
+        $login = $_SESSION['login'];
+    } else {
+        $login = "Anonymous";
+    }
   
-    $statuses = $statusFinder->findAll();
+    $limit = Verification::checkInteger($request->getParameter("limit")) ? $request->getParameter("limit") : null;
     
+    $orderby = htmlspecialchars($request->getParameter("orderby"));
+    $typeOrder = htmlspecialchars($request->getParameter("typeOrder"));
+    
+    if(isset($orderby) && !isset($typeOrder)) {
+        $response = new Response("Erreur survenue dans le tri",404);
+        $response->send();
+    }
+    
+    if($orderby && (!$typeOrder=='DESC' || !$typeOrder=='ASC')) {
+        $response = new Response("Erreur survenue dans le tri",404);
+        $response->send();
+    }
+    
+    $filtre = array('limit'      =>  $limit,
+                    'orderby'    =>  $orderby,
+                    'typeOrder'  =>  $typeOrder
+            );
+    
+    $statuses = $statusFinder->findAll($filtre);
+    
+    $content = $app->render("status.php",array('statuses'   => $statuses,
+                                               'login'      => $login ));
     if(count($statuses)==0) {
-        $response = new Response("",204);
+        $response = new Response($content,204);
         $response->send();
         return;
     }
@@ -53,13 +79,7 @@ $app->get('/statuses', function (Request $request) use ($app,$statusFinder) {
         $response->send();
         return;
     }
-    if($_SESSION['login']) {
-        $login = $_SESSION['login'];
-    } else {
-        $login = "Anonymous";
-    }
-    $content = $app->render("status.php",array('statuses'   => $statuses,
-                                               'login'      => $login ));
+    
     $response = new Response($content,200);
     $response->send();
    
@@ -118,6 +138,15 @@ $app->post('/statuses', function (Request $request) use ($app,$statusMapper) {
         return $app->render('statusesForm.php',array('user'     => $user,
                                                      'message'  => $message,
                                                      'error'    => $erreur));
+    }
+    
+    if($_SESSION['login'] != $user) {
+        $erreur = "You can't use another username for post a status";
+        $response = new Response($erreur,400);
+        $response->send();
+        return $app->render('statusesForm.php',array('user'     => $user,
+                                                     'message'  => $message,
+                                                     'error'    => $erreur)); 
     }
     
     $statusMapper->persist(new Status(null,$user,$message,date("Y-m-d H:i:s")));

@@ -16,12 +16,12 @@ class DataBase extends PDO {
     }
 
     public  function prepareAndExecuteQuery($query, array $parameters = []){
+      
         $this->statement = $this->prepare($query);
         foreach($parameters as $name => $value){
             $this->statement->bindValue(':'.$name,$value);
-        }
-        $this->statement->execute();
-        
+        }  
+        $this->statement->execute();         
     }
 
     public function getResult(){

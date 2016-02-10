@@ -18,6 +18,7 @@
             </tr>
             <tr>
                 <td><input type="submit" class='btn btn-primary' value="Envoyer"></td>
+                <td><a href="/statuses"><input type="button" class='btn btn-primary' value="Retour"/></a></td>
             </tr>
         </table>
     </form>   

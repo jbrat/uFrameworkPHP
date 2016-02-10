@@ -13,24 +13,35 @@ class StatusFinder implements FinderInterface {
         $this->conn = $conn;
     }
     
-    public function findAll() {
-        
+    public function findAll($filtre) {
+
         $requete = "SELECT * FROM statuses";
+        $param = array();
+
+        if($filtre['orderby'] && $filtre['typeOrder']) {
+            $requete .= " ORDER BY ".$filtre['orderby']." ".$filtre['typeOrder'];
+        }
         
-        $this->conn->prepareAndExecuteQuery($requete, array());
+        if($filtre['limit']) {
+            $requete .= " LIMIT ".intval($filtre['limit']);   
+        }
+
+        $this->conn->prepareAndExecuteQuery($requete,$param);
         $resultat = $this->conn->getResult();
         $this->conn->destroyQueryResults();
         $statuses = array();
         foreach($resultat as $status) {
             $statuses[] = new Status($status['id'], $status['user'], $status['message'], $status['date']);            
         }
+        
         return $statuses;
+        
     }
 
     public function findOneById($id) {
         
         $requete = "SELECT * FROM statuses WHERE id=:id"; 
-        $param=array('id' => $id);
+        $param = array('id' => $id);
 
         $this->conn->prepareAndExecuteQuery($requete, $param);
         $result = $this->conn->getResult()[0];
