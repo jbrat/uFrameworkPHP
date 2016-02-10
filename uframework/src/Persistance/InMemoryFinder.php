@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace Persistance;
 
 class InMemoryFinder implements FinderInterface
 {

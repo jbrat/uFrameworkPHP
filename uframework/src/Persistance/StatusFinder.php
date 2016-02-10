@@ -1,9 +1,10 @@
 <?php
 
-namespace Model;
+namespace Persistance;
 
 use DataBase\DataBase;
 use Model\Status;
+use Persistance\FinderInterface;
 
 
 class StatusFinder implements FinderInterface {

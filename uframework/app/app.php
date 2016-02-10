@@ -4,10 +4,10 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Http\Request;
 use Http\Response;
-use Model\StatusFinder;
-use \Model\UserFinder;
+use Persistance\StatusFinder;
+use Persistance\UserFinder;
 use Tools\Verification;
-use \Persistance\UserMapper;
+use Persistance\UserMapper;
 use Persistance\StatusMapper;
 use DataBase\DataBase;
 use Model\Status;
@@ -39,11 +39,8 @@ $app->get('/', function () use ($app) {
 });
 
 $app->get('/statuses', function (Request $request) use ($app,$statusFinder) {
-    if($_SESSION['login']) {
-        $login = $_SESSION['login'];
-    } else {
-        $login = "Anonymous";
-    }
+    
+    $login = $_SESSION['login'] ? $_SESSION['login'] : "Anonymous";
   
     $limit = Verification::checkInteger($request->getParameter("limit")) ? $request->getParameter("limit") : null;
     
@@ -119,8 +116,8 @@ $app->get('/statusesForm', function (Request $request) use ($app) {
 
 $app->post('/statuses', function (Request $request) use ($app,$statusMapper) {
 
-    $message = $request->getParameter('message');
-    $user = $request->getParameter('username'); 
+    $message = htmlspecialchars($request->getParameter('message'));
+    $user = htmlspecialchars($request->getParameter('username')); 
     
     if(!isset($user) || !isset($message)) {
         $erreur = "Empty parameters";
@@ -220,9 +217,9 @@ $app->post('/login', function (Request $request) use ($app,$userFinder) {
 
 $app->post('/register', function (Request $request) use ($app,$userMapper) {
     
-    $login = $request->getParameter('user');
-    $password = $request->getParameter('password');
-    $password_verif = $request->getParameter('password2');
+    $login = htmlspecialchars($request->getParameter('user'));
+    $password = htmlspecialchars($request->getParameter('password'));
+    $password_verif = htmlspecialchars($request->getParameter('password2'));
     
     if(!isset($login) || !isset($password)) {
         $erreur = "Empty parameters";
