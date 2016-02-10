@@ -19,4 +19,3 @@ INSERT INTO statuses(user,message,date) VALUES("jubrat","Sortie de php7 aleluja 
 INSERT INTO statuses(user,message,date) VALUES("jubrat","PHP est le meilleur langage",SYSDATE());
 INSERT INTO statuses(user,message,date) VALUES("panegroni","Le php c'est la vie !",SYSDATE());
 
-INSERT INTO user(login,password) VALUES("admin","admin");
