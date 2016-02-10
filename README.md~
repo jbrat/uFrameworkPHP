@@ -26,11 +26,12 @@ Action possible en n'étant pas authentifié :
 
 Installation Framework : 
 
+
 Vous devez tout d'abord posséder la dernière version de PHP qui est la 7, un script est disponible à la racine du GIT pour l'installer en utilisant les packets UBUNTU.
 
 Composer est indispensable, vous devez aussi l'installer.
 
-Une fois ces deux choses installées vous pouvez cloner le projet sur votre ordinateur, ensuite se placer dans le dossier /uframework et effectuer un composer install.
+Une fois ces deux choses installer vous pouvez cloner le projet sur votre ordinateur, ensuite se placer dans le dossier /uframework et effectuer un composer install.
 
 Celui-ci va inclure l'ensemble des librairies nécéssaire en fonctionnement. 
 
