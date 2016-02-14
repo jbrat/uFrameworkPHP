@@ -1,6 +1,0 @@
-CREATE TABLE statuses
-(
-    id INT PRIMARY KEY NOT NULL,
-    nom VARCHAR(100),
-    message VARCHAR(400),
-)
