@@ -3,7 +3,7 @@
 Micro Framework réalisé en PHP7, les fonctionnalités sont la gestion de statuts (Tweets) et un système d'authentification.
 
 
-Fonctionalités réalisées :
+##Fonctionalités réalisées :
 
 - Système d'authentification utilisant un Firewall, l'utilisateur n'étant pas connecté, il est limité simplement à une consultation des statuts
 
@@ -24,7 +24,7 @@ Action possible en n'étant pas authentifié :
 
 
 
-Installation du Framework : 
+##Installation du Framework : 
 
 Vous devez tout d'abord posséder la dernière version de PHP qui est la 7, un script est disponible à la racine du GIT pour l'installer en utilisant les packets d'Ubuntu.
 
