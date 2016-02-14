@@ -17,7 +17,6 @@ class StatusFinder implements FinderInterface {
     public function findAll($filtre) {
 
         $requete = "SELECT * FROM statuses";
-        $param = array();
 
         if($filtre['orderby'] && $filtre['typeOrder']) {
             $requete .= " ORDER BY ".$filtre['orderby']." ".$filtre['typeOrder'];
@@ -27,7 +26,7 @@ class StatusFinder implements FinderInterface {
             $requete .= " LIMIT ".intval($filtre['limit']);   
         }
 
-        $this->conn->prepareAndExecuteQuery($requete,$param);
+        $this->conn->prepareAndExecuteQuery($requete,null);
         $resultat = $this->conn->getResult();
         $this->conn->destroyQueryResults();
         $statuses = array();

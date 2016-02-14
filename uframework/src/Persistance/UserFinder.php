@@ -18,7 +18,7 @@ class UserFinder {
     function findOneById($id) {
         
         $requete = "SELECT * FROM user WHERE id=:id"; 
-        $param=array('id' => $id);
+        $param = array('id' => $id);
 
         $this->conn->prepareAndExecuteQuery($requete, $param);
         $result = $this->conn->getResult()[0];

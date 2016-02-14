@@ -12,7 +12,7 @@ class User {
     function __construct($id, $login, $password) {
         $this->id = $id;
         $this->login = $login;
-        $this->password = $password;
+        $this->password = password_hash($password,PASSWORD_DEFAULT);
     }
     
     function getId() {

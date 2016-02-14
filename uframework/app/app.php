@@ -38,7 +38,7 @@ $app->get('/', function () use ($app) {
     $app->redirect('/statuses');
 });
 
-$app->get('/statuses', function (Request $request) use ($app,$statusFinder) {
+$app->get('/statuses', function (Request $request) use ($app, $statusFinder) {
     
     $login = $_SESSION['login'] ? $_SESSION['login'] : "Anonymous";
   
@@ -48,19 +48,20 @@ $app->get('/statuses', function (Request $request) use ($app,$statusFinder) {
     $typeOrder = htmlspecialchars($request->getParameter("typeOrder"));
     
     if(isset($orderby) && !isset($typeOrder)) {
-        $response = new Response("Erreur survenue dans le tri",404);
+        $response = new Response("Error with the sort",404);
         $response->send();
+        return;
     }
     
     if($orderby && (!$typeOrder=='DESC' || !$typeOrder=='ASC')) {
-        $response = new Response("Erreur survenue dans le tri",404);
+        $response = new Response("Error with the sort",404);
         $response->send();
+        return;
     }
     
     $filtre = array('limit'      =>  $limit,
                     'orderby'    =>  $orderby,
-                    'typeOrder'  =>  $typeOrder
-            );
+                    'typeOrder'  =>  $typeOrder);
     
     $statuses = $statusFinder->findAll($filtre);
     
@@ -123,15 +124,17 @@ $app->post('/statuses', function (Request $request) use ($app,$statusMapper) {
         $erreur = "Empty parameters";
         $response = new Response($erreur,400);
         $response->send();
+        
         return  $app->render('statusesForm.php',array('user'     => $user,
-                                                     'message'  => $message,
-                                                     'error'    => $erreur));
+                                                      'message'  => $message,
+                                                      'error'    => $erreur));
     }
     
     if(!Verification::checkTweetMessage($message)) {
         $erreur = "The message size is larger than 140";
         $response = new Response($erreur,400);
         $response->send();
+        
         return $app->render('statusesForm.php',array('user'     => $user,
                                                      'message'  => $message,
                                                      'error'    => $erreur));
@@ -141,6 +144,7 @@ $app->post('/statuses', function (Request $request) use ($app,$statusMapper) {
         $erreur = "You can't use another username for post a status";
         $response = new Response($erreur,400);
         $response->send();
+        
         return $app->render('statusesForm.php',array('user'     => $user,
                                                      'message'  => $message,
                                                      'error'    => $erreur)); 
@@ -166,7 +170,16 @@ $app->delete('/statuses/(\d+)', function (Request $request, $id) use ($app,$stat
         $response->send();
         return; 
     }
+    
+    $status = $statusFinder->findOneById($id);
+    if($status->getUser() != $_SESSION['login']) {
+        $response = new Response("You can't delete other status",400);
+        $response->send();
+        return;
+    }
+    
     $statusMapper->remove($id);
+    
     $app->redirect('/statuses');
 });
 
@@ -224,7 +237,7 @@ $app->post('/register', function (Request $request) use ($app,$userMapper) {
     if(!isset($login) || !isset($password)) {
         $erreur = "Empty parameters";
         $content = $app->render('register.php',array('erreur'   => $erreur,
-                                                 'login'    => $login));
+                                                     'login'    => $login));
         $response = new Response($content,400);
         $response->send();
     }
@@ -235,7 +248,7 @@ $app->post('/register', function (Request $request) use ($app,$userMapper) {
                                                  'login'    => $login));
     }
     
-    $userMapper->persist(new User(null,$login, password_hash($password,PASSWORD_DEFAULT)));
+    $userMapper->persist(new User(null,$login, $password));
     
     $app->redirect('/login?login='.$login);  
     
@@ -257,11 +270,11 @@ $app->addListener('process.before', function(Request $req) use ($app) {
     session_start();
 
     $allowed = [
-        '/login' => [ Request::GET, Request::POST ],
-        '/statuses/(\d+)' => [ Request::GET ],
-        '/statuses' => [ Request::GET, Request::POST ],
-        '/register' => [ Request::GET, Request::POST ],
-        '/' => [ Request::GET ],
+        '/login'            => [ Request::GET, Request::POST ],
+        '/statuses/(\d+)'   => [ Request::GET ],
+        '/statuses'         => [ Request::GET, Request::POST ],
+        '/register'         => [ Request::GET, Request::POST ],
+        '/'                 => [ Request::GET ],
     ];
 
     if (isset($_SESSION['is_authenticated'])
