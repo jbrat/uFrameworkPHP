@@ -2,6 +2,8 @@
 
 Micro Framework réalisé en PHP7, les fonctionnalités sont la gestion de statuts (Tweets) et un système d'authentification.
 
+BRAT Julien & NEGRONI Paul
+
 
 ##Fonctionalités réalisées :
 
