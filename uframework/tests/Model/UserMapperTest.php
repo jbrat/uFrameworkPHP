@@ -39,8 +39,8 @@ SQL
 
     public function testRemove()
     {
-        $user = new User('1', 'julien', 'test');
-                
+        $user = new User('10', 'julien', 'test');
+        
         $rows = $this->connection->query('SELECT COUNT(*) FROM USER')->fetch(PDO::FETCH_NUM);
         $this->assertEquals(0, $rows[0]);
         $this->userMapper->persist($user);

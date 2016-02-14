@@ -15,11 +15,12 @@ class StatusMapper {
     }
 
     function persist(Status $status) {
-         $requete = "INSERT INTO statuses(user,message,date) value(:user, :message, :date)";
+         $requete = "INSERT INTO statuses(id, user, message, date) value(:id, :user, :message, :date)";
          $param = array(
-             'user'    => $status->getUser(),
-             'message' => $status->getMessage(),
-             'date'    => $status->getDate()
+             'id'       => $status->getId(),
+             'user'     => $status->getUser(),
+             'message'  => $status->getMessage(),
+             'date'     => $status->getDate()
          );
          $this->conn->prepareAndExecuteQuery($requete, $param);
     }

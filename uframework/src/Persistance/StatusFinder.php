@@ -26,7 +26,7 @@ class StatusFinder implements FinderInterface {
             $requete .= " LIMIT ".intval($filtre['limit']);   
         }
 
-        $this->conn->prepareAndExecuteQuery($requete,null);
+        $this->conn->prepareAndExecuteQuery($requete,array());
         $resultat = $this->conn->getResult();
         $this->conn->destroyQueryResults();
         $statuses = array();

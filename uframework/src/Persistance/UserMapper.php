@@ -14,8 +14,9 @@ class UserMapper {
     }
     
     function persist(User $user) {
-        $requete = "INSERT INTO user(login, password) value(:login,:password)";
+        $requete = "INSERT INTO user(id, login, password) value(:id, :login,:password)";
         $param = array(
+            'id'        => $user->getId(),
             'login'     => $user->getLogin(),
             'password'  => $user->getPassword()
         );

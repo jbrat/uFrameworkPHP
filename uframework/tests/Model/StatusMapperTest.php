@@ -42,7 +42,7 @@ SQL
 
     public function testRemove()
     {
-        $status = new Status('4', 'jubrat', 'Test message', date('Y-m-d H:i:s'));
+        $status = new Status('10', 'jubrat', 'Test message', date('Y-m-d H:i:s'));
         
         $rows = $this->connection->query('SELECT COUNT(*) FROM STATUSES')->fetch(PDO::FETCH_NUM);
         $this->assertEquals(0, $rows[0]);
